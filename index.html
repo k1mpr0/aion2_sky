@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>아이온2 레이드 파티 조회기</title>
+  <style>
+    /* ========== 기본 스타일 ========== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d0f1a;
+      color: #cdd6f4;
+      font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+      min-height: 100vh;
+      padding: 30px 16px 60px;
+    }
+
+    /* ========== 헤더 ========== */
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    header h1 {
+      font-size: 2rem;
+      color: #89b4fa;
+      letter-spacing: 2px;
+      text-shadow: 0 0 18px #89b4fa88;
+    }
+    header p {
+      margin-top: 6px;
+      font-size: 0.85rem;
+      color: #6c7086;
+    }
+
+    /* ========== 검색창 ========== */
+    .search-area {
+      display: flex;
+      gap: 8px;
+      max-width: 480px;
+      margin: 0 auto 32px;
+    }
+    .search-area input {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1.5px solid #313244;
+      background: #1e1e2e;
+      color: #cdd6f4;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-area input:focus { border-color: #89b4fa; }
+    .search-area button {
+      padding: 12px 22px;
+      border-radius: 8px;
+      border: none;
+      background: #89b4fa;
+      color: #1e1e2e;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .search-area button:hover { background: #b4d0fa; }
+
+    /* ========== 결과 카드 ========== */
+    #result { max-width: 600px; margin: 0 auto 48px; }
+
+    .card {
+      background: #1e1e2e;
+      border: 1.5px solid #313244;
+      border-radius: 14px;
+      padding: 24px 28px;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #313244;
+    }
+    .char-name { font-size: 1.4rem; font-weight: 700; color: #cba6f7; }
+    .char-job {
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    /* 직업별 색상 */
+    .job-탱커  { background:#45475a; color:#f38ba8; }
+    .job-힐러  { background:#45475a; color:#a6e3a1; }
+    .job-딜러  { background:#45475a; color:#fab387; }
+    .job-버퍼  { background:#45475a; color:#f9e2af; }
+
+    .party-num {
+      margin-left: auto;
+      font-size: 1rem;
+      color: #89b4fa;
+      font-weight: 700;
+    }
+
+    /* 멤버 목록 */
+    .section-label {
+      font-size: 0.78rem;
+      color: #6c7086;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    .member-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .member-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #181825;
+      border: 1px solid #313244;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.88rem;
+    }
+    .member-chip.me { border-color: #cba6f7; background: #1e1b2e; }
+    .member-chip .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .dot-탱커 { background:#f38ba8; }
+    .dot-힐러 { background:#a6e3a1; }
+    .dot-딜러 { background:#fab387; }
+    .dot-버퍼 { background:#f9e2af; }
+
+    /* 시너지 평가 */
+    .synergy-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      margin-top: 4px;
+    }
+    .synergy-box.great  { background:#1e3a2f; border:1.5px solid #a6e3a1; }
+    .synergy-box.good   { background:#2a2a1e; border:1.5px solid #f9e2af; }
+    .synergy-box.poor   { background:#3a1e1e; border:1.5px solid #f38ba8; }
+
+    .synergy-badge {
+      font-size: 1.1rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .great .synergy-badge { color:#a6e3a1; }
+    .good  .synergy-badge { color:#f9e2af; }
+    .poor  .synergy-badge { color:#f38ba8; }
+
+    .synergy-reason { font-size: 0.85rem; color:#bac2de; }
+
+    /* 오류 메시지 */
+    .not-found {
+      text-align: center;
+      padding: 30px;
+      color: #6c7086;
+      background: #1e1e2e;
+      border-radius: 14px;
+      border: 1.5px solid #313244;
+    }
+
+    /* ========== 전체 편성표 ========== */
+    .table-section {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .table-section h2 {
+      font-size: 1.1rem;
+      color: #89b4fa;
+      margin-bottom: 14px;
+      letter-spacing: 1px;
+    }
+    .roster-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    .roster-table th {
+      background: #181825;
+      color: #89b4fa;
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 2px solid #313244;
+    }
+    .roster-table td {
+      padding: 9px 14px;
+      border-bottom: 1px solid #27273a;
+      color: #cdd6f4;
+    }
+    .roster-table tr:hover td { background: #1c1c2e; }
+
+    /* 조별 행 구분선 */
+    .roster-table tr.group-start td {
+      border-top: 2px solid #45475a;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>⚔️ 아이온2 레이드 파티 조회기</h1>
+  <p>캐릭터 이름을 검색하면 편성된 조와 시너지 평가를 확인할 수 있습니다.</p>
+</header>
+
+<!-- 검색창 -->
+<div class="search-area">
+  <input type="text" id="searchInput" placeholder="캐릭터 이름 입력..." />
+  <button onclick="search()">검색</button>
+</div>
+
+<!-- 검색 결과 표시 영역 -->
+<div id="result"></div>
+
+<!-- 전체 편성표 -->
+<div class="table-section">
+  <h2>📋 전체 편성표</h2>
+  <table class="roster-table" id="rosterTable">
+    <thead>
+      <tr>
+        <th>조</th>
+        <th>캐릭터명</th>
+        <th>직업</th>
+      </tr>
+    </thead>
+    <tbody id="rosterBody"></tbody>
+  </table>
+</div>
+
+<script>
+  // ============================================================
+  // ✏️  [수정 가능] 편성 데이터
+  // 각 캐릭터 항목:
+  //   name  : 캐릭터 이름 (문자열)
+  //   job   : 직업 — "탱커" / "힐러" / "딜러" / "버퍼" 중 하나
+  //   group : 조 번호 (숫자)
+  // ============================================================
+  const characters = [
+    // --- 1조 ---
+    { name: "강철수호자",   job: "탱커", group: 1 },
+    { name: "빛의치유사",   job: "힐러", group: 1 },
+    { name: "폭풍의검객",   job: "딜러", group: 1 },
+    { name: "번개궁수",     job: "딜러", group: 1 },
+    { name: "달빛버퍼",     job: "버퍼", group: 1 },
+
+    // --- 2조 ---
+    { name: "흑철방패",     job: "탱커", group: 2 },
+    { name: "성스러운손",   job: "힐러", group: 2 },
+    { name: "화염술사",     job: "딜러", group: 2 },
+    { name: "암살자의날",   job: "딜러", group: 2 },
+
+    // --- 3조 (힐러 없음 → 아쉬운 조합) ---
+    { name: "거인돌격대",   job: "탱커", group: 3 },
+    { name: "냉기폭격수",   job: "딜러", group: 3 },
+    { name: "독의기사",     job: "딜러", group: 3 },
+    { name: "전장의북소리", job: "버퍼", group: 3 },
+
+    // --- 4조 (딜러 1명 → 무난한 조합) ---
+    { name: "바람수호신",   job: "탱커", group: 4 },
+    { name: "자연의치유자", job: "힐러", group: 4 },
+    { name: "천공의저격수", job: "딜러", group: 4 },
+  ];
+  // ============================================================
+  // ✏️ 데이터 수정 끝 — 아래는 로직, 수정 불필요
+  // ============================================================
+
+  // ── 시너지 평가 함수 ──────────────────────────────────────
+  // 조 번호를 받아 { grade, label, reason } 반환
+  // grade: "great" | "good" | "poor"
+  function evaluateSynergy(groupNum) {
+    // 해당 조의 캐릭터만 추출
+    const members = characters.filter(c => c.group === groupNum);
+
+    const hasTank   = members.some(c => c.job === "탱커");
+    const hasHealer = members.some(c => c.job === "힐러");
+    const hasBuffer = members.some(c => c.job === "버퍼");
+    const dealerCnt = members.filter(c => c.job === "딜러").length;
+
+    // 힐러 없으면 무조건 아쉬움
+    if (!hasHealer) {
+      return {
+        grade: "poor",
+        label: "⚠️ 아쉬움",
+        reason: "힐러가 없어 지속 전투에서 생존이 불안정할 수 있습니다."
+      };
+    }
+
+    // 탱커 + 힐러 + 딜러 2명 이상 = 기본 충족
+    if (hasTank && dealerCnt >= 2) {
+      // 버퍼까지 있으면 최고
+      if (hasBuffer) {
+        return {
+          grade: "great",
+          label: "✨ 매우 좋음",
+          reason: "탱커·힐러·딜러·버퍼 모든 역할이 균형 있게 구성된 이상적인 파티입니다."
+        };
+      }
+      return {
+        grade: "great",
+        label: "✨ 매우 좋음",
+        reason: "탱커, 힐러, 다수 딜러가 고루 갖춰진 안정적인 파티 구성입니다."
+      };
+    }
+
+    // 그 외
+    return {
+      grade: "good",
+      label: "👍 무난함",
+      reason: "기본 구성은 갖췄으나 딜러 수 또는 특정 역할이 부족해 보완이 필요합니다."
+    };
+  }
+
+  // ── 검색 함수 ──────────────────────────────────────────────
+  function search() {
+    const query  = document.getElementById("searchInput").value.trim();
+    const result = document.getElementById("result");
+
+    // 빈 입력 처리
+    if (!query) {
+      result.innerHTML = "";
+      return;
+    }
+
+    // 캐릭터 찾기 (대소문자 무관, 공백 무시)
+    const found = characters.find(
+      c => c.name.replace(/\s/g, "") === query.replace(/\s/g, "")
+    );
+
+    // 찾지 못한 경우
+    if (!found) {
+      result.innerHTML = `
+        <div class="not-found">
+          <p style="font-size:1.5rem;margin-bottom:8px">🔍</p>
+          <p><strong>${escHtml(query)}</strong>의 편성 정보를 찾을 수 없습니다.</p>
+          <p style="font-size:0.8rem;margin-top:6px;color:#585b70">이름을 정확히 입력했는지 확인해 주세요.</p>
+        </div>`;
+      return;
+    }
+
+    // 같은 조 멤버 목록
+    const groupMembers = characters.filter(c => c.group === found.group);
+    const synergy      = evaluateSynergy(found.group);
+
+    // 멤버 칩 HTML 생성
+    const memberChips = groupMembers.map(m => `
+      <div class="member-chip ${m.name === found.name ? "me" : ""}">
+        <span class="dot dot-${m.job}"></span>
+        <span>${escHtml(m.name)}</span>
+        <span style="color:#585b70;font-size:0.78rem">${m.job}</span>
+        ${m.name === found.name ? '<span style="color:#cba6f7;font-size:0.75rem">← 나</span>' : ""}
+      </div>`).join("");
+
+    // 결과 카드 렌더링
+    result.innerHTML = `
+      <div class="card">
+        <div class="card-header">
+          <span class="char-name">${escHtml(found.name)}</span>
+          <span class="char-job job-${found.job}">${found.job}</span>
+          <span class="party-num">${found.group}조</span>
+        </div>
+
+        <p class="section-label">같은 조 멤버 (총 ${groupMembers.length}명)</p>
+        <div class="member-list">${memberChips}</div>
+
+        <p class="section-label">조 시너지 평가</p>
+        <div class="synergy-box ${synergy.grade}">
+          <span class="synergy-badge">${synergy.label}</span>
+          <span class="synergy-reason">${synergy.reason}</span>
+        </div>
+      </div>`;
+  }
+
+  // 엔터 키로 검색
+  document.getElementById("searchInput")
+    .addEventListener("keydown", e => { if (e.key === "Enter") search(); });
+
+  // ── XSS 방지용 HTML 이스케이프 함수 ──────────────────────
+  function escHtml(str) {
+    return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  // ── 전체 편성표 렌더링 ────────────────────────────────────
+  function renderRoster() {
+    const tbody = document.getElementById("rosterBody");
+
+    // 조 번호 오름차순 정렬
+    const sorted = [...characters].sort((a, b) =>
+      a.group !== b.group ? a.group - b.group : 0
+    );
+
+    let prevGroup = null;
+    sorted.forEach(c => {
+      const tr = document.createElement("tr");
+      // 조가 바뀌면 구분선 클래스 추가
+      if (c.group !== prevGroup) tr.classList.add("group-start");
+      prevGroup = c.group;
+
+      // 직업 태그 색상 클래스 재사용
+      tr.innerHTML = `
+        <td>${c.group}조</td>
+        <td>${escHtml(c.name)}</td>
+        <td><span class="tag job-${c.job}">${c.job}</span></td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // 페이지 로드 시 편성표 그리기
+  renderRoster();
+</script>
+</body>
+</html>
