@@ -73,7 +73,7 @@ header p{font-size:.78rem;color:var(--muted);margin-top:4px}
 .tab.active{background:var(--card);color:var(--accent);border-color:var(--accent);font-weight:700}
 
 /* ===== 탭 내용 ===== */
-.tab-content{display:none;max-width:960px;margin:0 auto;padding:0 16px 16px}
+.tab-content{display:none;max-width:1400px;margin:0 auto;padding:0 16px 16px}
 .tab-content.active{display:block}
 .tab-panel{
   background:var(--card);border:1px solid var(--border);
@@ -121,6 +121,8 @@ header p{font-size:.78rem;color:var(--muted);margin-top:4px}
 .td-num{width:26px;color:var(--muted);font-size:.75rem;text-align:center}
 .td-name{font-weight:600;color:var(--text)}
 .td-job{font-size:.72rem;color:var(--muted);margin-top:1px}
+.td-name-row{display:flex;align-items:center;gap:6px}
+.td-cp{font-size:.68rem;color:#7aa2f7;background:#1a2040;border:1px solid #2a3a6a;border-radius:4px;padding:1px 5px;letter-spacing:.5px;white-space:nowrap}
 .td-job-badge{display:inline-block;padding:1px 7px;border-radius:999px;font-size:.7rem;font-weight:700}
 
 /* 직업 색상 */
@@ -161,6 +163,36 @@ header p{font-size:.78rem;color:var(--muted);margin-top:4px}
 .synergy-info{display:flex;flex-direction:column;gap:1px}
 .synergy-label{font-weight:700;font-size:.77rem}
 .synergy-reason{font-size:.69rem;opacity:.85}
+
+/* ===== AI 추천 그룹 카드 (실제 편성표 탭 내 특별 색상) ===== */
+.group-card.ai-group{
+  background:#0f1520;
+  border:1.5px solid #4a3f7a;
+  position:relative;
+}
+.group-card.ai-group .group-header{
+  display:flex;align-items:center;justify-content:space-between;
+}
+.ai-recommend-tag{
+  background:linear-gradient(90deg,#bb9af7,#7aa2f7);
+  color:#0b0d18;font-size:.62rem;font-weight:800;
+  padding:2px 8px;border-radius:999px;letter-spacing:.5px;
+  white-space:nowrap;
+}
+.group-card.ai-group .group-header{
+  background:linear-gradient(90deg,#2a1e4a,#1e2040);
+  color:#bb9af7;border-bottom:1px solid #4a3f7a;
+}
+.group-card.ai-group .party-label{
+  background:#1a1230;color:#9a8abf;
+  border-bottom:1px dashed #3a2d6a44;
+}
+.group-card.ai-group .party-label.p2{background:#141028}
+.group-card.ai-group .member-table tr.p1-row{background:#1a1230}
+.group-card.ai-group .member-table tr.p2-row{background:#141028}
+.group-card.ai-group .member-table tr:hover{background:#261a48}
+.group-card.ai-group .synergy-wrap.p1{background:#1a1230}
+.group-card.ai-group .synergy-wrap.p2{background:#141028}
 
 /* ===== 탭2: AI 추천 ===== */
 .ai-section{margin-bottom:32px}
@@ -248,74 +280,74 @@ const raidData = [
   // ──────────────────────────────
   //  1보스: 루드라 — 그룹 1
   // ──────────────────────────────
-  {boss:"루드라",group:1,number:1,name:"아이젠",   job:"수호성"},
-  {boss:"루드라",group:1,number:2,name:"세라핀",   job:"치유성"},
-  {boss:"루드라",group:1,number:3,name:"블레이즈", job:"검성"},
-  {boss:"루드라",group:1,number:4,name:"루나리스", job:"마도성"},
-  {boss:"루드라",group:1,number:5,name:"토르벡",   job:"호법성"},
-  {boss:"루드라",group:1,number:6,name:"실버윙",   job:"궁성"},
-  {boss:"루드라",group:1,number:7,name:"다크샤도", job:"살성"},
-  {boss:"루드라",group:1,number:8,name:"에리카",   job:"정령성"},
+  {boss:"루드라",group:1,number:1,name:"아이젠",   job:"수호성",cp:3333},
+  {boss:"루드라",group:1,number:2,name:"세라핀",   job:"치유성",cp:3333},
+  {boss:"루드라",group:1,number:3,name:"블레이즈", job:"검성",  cp:3333},
+  {boss:"루드라",group:1,number:4,name:"루나리스", job:"마도성",cp:3333},
+  {boss:"루드라",group:1,number:5,name:"토르벡",   job:"호법성",cp:3333},
+  {boss:"루드라",group:1,number:6,name:"실버윙",   job:"궁성",  cp:3333},
+  {boss:"루드라",group:1,number:7,name:"다크샤도", job:"살성",  cp:3333},
+  {boss:"루드라",group:1,number:8,name:"에리카",   job:"정령성",cp:3333},
 
   // ──────────────────────────────
   //  1보스: 루드라 — 그룹 2
   // ──────────────────────────────
-  {boss:"루드라",group:2,number:1,name:"카이로스",  job:"수호성"},
-  {boss:"루드라",group:2,number:2,name:"유이나",    job:"치유성"},
-  {boss:"루드라",group:2,number:3,name:"스톰브레이커",job:"검성"},
-  {boss:"루드라",group:2,number:4,name:"페넬로페",  job:"호법성"},
-  {boss:"루드라",group:2,number:5,name:"라이카",    job:"수호성"},
-  {boss:"루드라",group:2,number:6,name:"제이슨",    job:"마도성"},
-  {boss:"루드라",group:2,number:7,name:"셀린",      job:"궁성"},
-  {boss:"루드라",group:2,number:8,name:"그레이슨",  job:"살성"},
+  {boss:"루드라",group:2,number:1,name:"카이로스",    job:"수호성",cp:3333},
+  {boss:"루드라",group:2,number:2,name:"유이나",      job:"치유성",cp:3333},
+  {boss:"루드라",group:2,number:3,name:"스톰브레이커",job:"검성",  cp:3333},
+  {boss:"루드라",group:2,number:4,name:"페넬로페",    job:"호법성",cp:3333},
+  {boss:"루드라",group:2,number:5,name:"라이카",      job:"수호성",cp:3333},
+  {boss:"루드라",group:2,number:6,name:"제이슨",      job:"마도성",cp:3333},
+  {boss:"루드라",group:2,number:7,name:"셀린",        job:"궁성",  cp:3333},
+  {boss:"루드라",group:2,number:8,name:"그레이슨",    job:"살성",  cp:3333},
 
   // ──────────────────────────────
   //  1보스: 루드라 — 그룹 3
   // ──────────────────────────────
-  {boss:"루드라",group:3,number:1,name:"벨카이트",  job:"수호성"},
-  {boss:"루드라",group:3,number:2,name:"소피아",    job:"치유성"},
-  {boss:"루드라",group:3,number:3,name:"아우로라",  job:"정령성"},
-  {boss:"루드라",group:3,number:4,name:"타이거",    job:"검성"},
-  {boss:"루드라",group:3,number:5,name:"란슬롯",    job:"호법성"},
-  {boss:"루드라",group:3,number:6,name:"미네르바",  job:"마도성"},
-  {boss:"루드라",group:3,number:7,name:"퀸로즈",    job:"치유성"},
-  {boss:"루드라",group:3,number:8,name:"바이퍼",    job:"살성"},
+  {boss:"루드라",group:3,number:1,name:"벨카이트",  job:"수호성",cp:3333},
+  {boss:"루드라",group:3,number:2,name:"소피아",    job:"치유성",cp:3333},
+  {boss:"루드라",group:3,number:3,name:"아우로라",  job:"정령성",cp:3333},
+  {boss:"루드라",group:3,number:4,name:"타이거",    job:"검성",  cp:3333},
+  {boss:"루드라",group:3,number:5,name:"란슬롯",    job:"호법성",cp:3333},
+  {boss:"루드라",group:3,number:6,name:"미네르바",  job:"마도성",cp:3333},
+  {boss:"루드라",group:3,number:7,name:"퀸로즈",    job:"치유성",cp:3333},
+  {boss:"루드라",group:3,number:8,name:"바이퍼",    job:"살성",  cp:3333},
 
   // ──────────────────────────────
   //  1보스: 루드라 — 그룹 4
   // ──────────────────────────────
-  {boss:"루드라",group:4,number:1,name:"드래곤하트", job:"수호성"},
-  {boss:"루드라",group:4,number:2,name:"헬리아",    job:"치유성"},
-  {boss:"루드라",group:4,number:3,name:"나이트폴",  job:"살성"},
-  {boss:"루드라",group:4,number:4,name:"스텔라",    job:"마도성"},
-  {boss:"루드라",group:4,number:5,name:"로드릭",    job:"호법성"},
-  {boss:"루드라",group:4,number:6,name:"엘리시아",  job:"정령성"},
-  {boss:"루드라",group:4,number:7,name:"하울링",    job:"검성"},
-  {boss:"루드라",group:4,number:8,name:"세이지",    job:"궁성"},
+  {boss:"루드라",group:4,number:1,name:"드래곤하트", job:"수호성",cp:3333},
+  {boss:"루드라",group:4,number:2,name:"헬리아",     job:"치유성",cp:3333},
+  {boss:"루드라",group:4,number:3,name:"나이트폴",   job:"살성",  cp:3333},
+  {boss:"루드라",group:4,number:4,name:"스텔라",     job:"마도성",cp:3333},
+  {boss:"루드라",group:4,number:5,name:"로드릭",     job:"호법성",cp:3333},
+  {boss:"루드라",group:4,number:6,name:"엘리시아",   job:"정령성",cp:3333},
+  {boss:"루드라",group:4,number:7,name:"하울링",     job:"검성",  cp:3333},
+  {boss:"루드라",group:4,number:8,name:"세이지",     job:"궁성",  cp:3333},
 
   // ──────────────────────────────
   //  2보스: 침식의 정화소 — 그룹 1
   // ──────────────────────────────
-  {boss:"침식의 정화소",group:1,number:1,name:"아크론",   job:"수호성"},
-  {boss:"침식의 정화소",group:1,number:2,name:"리브라",   job:"검성"},
-  {boss:"침식의 정화소",group:1,number:3,name:"볼텍스",   job:"마도성"},
-  {boss:"침식의 정화소",group:1,number:4,name:"루미나",   job:"치유성"},
-  {boss:"침식의 정화소",group:1,number:5,name:"제피르",   job:"호법성"},
-  {boss:"침식의 정화소",group:1,number:6,name:"케이던스", job:"궁성"},
-  {boss:"침식의 정화소",group:1,number:7,name:"프로스트", job:"정령성"},
-  {boss:"침식의 정화소",group:1,number:8,name:"테라",     job:"살성"},
+  {boss:"침식의 정화소",group:1,number:1,name:"메이트",   job:"살성",  cp:3333},
+  {boss:"침식의 정화소",group:1,number:2,name:"오팔팔",   job:"수호성",cp:3333},
+  {boss:"침식의 정화소",group:1,number:3,name:"찌디",     job:"궁성",  cp:3333},
+  {boss:"침식의 정화소",group:1,number:4,name:"살구",     job:"치유성",cp:3333},
+  {boss:"침식의 정화소",group:1,number:5,name:"초능력",   job:"마도성",cp:3333},
+  {boss:"침식의 정화소",group:1,number:6,name:"태양",     job:"수호성",cp:3333},
+  {boss:"침식의 정화소",group:1,number:7,name:"호법으앜", job:"호법성",cp:3333},
+  {boss:"침식의 정화소",group:1,number:8,name:"초잉",     job:"치유성",cp:3333},
 
   // ──────────────────────────────
   //  2보스: 침식의 정화소 — 그룹 2 (필수 반영 데이터)
   // ──────────────────────────────
-  {boss:"침식의 정화소",group:2,number:1,name:"현곤",  job:"수호성"},
-  {boss:"침식의 정화소",group:2,number:2,name:"은묘",  job:"검성"},
-  {boss:"침식의 정화소",group:2,number:3,name:"매머드",job:"마도성"},
-  {boss:"침식의 정화소",group:2,number:4,name:"금묘",  job:"치유성"},
-  {boss:"침식의 정화소",group:2,number:5,name:"조이",  job:"호법성"},
-  {boss:"침식의 정화소",group:2,number:6,name:"오링",  job:"궁성"},
-  {boss:"침식의 정화소",group:2,number:7,name:"썬버",  job:"정령성"},
-  {boss:"침식의 정화소",group:2,number:8,name:"히밥",  job:"치유성"},
+  {boss:"침식의 정화소",group:2,number:1,name:"현곤",  job:"수호성",cp:3333},
+  {boss:"침식의 정화소",group:2,number:2,name:"은묘",  job:"검성",  cp:3333},
+  {boss:"침식의 정화소",group:2,number:3,name:"매머드",job:"마도성",cp:3333},
+  {boss:"침식의 정화소",group:2,number:4,name:"금묘",  job:"치유성",cp:3333},
+  {boss:"침식의 정화소",group:2,number:5,name:"조이",  job:"호법성",cp:3333},
+  {boss:"침식의 정화소",group:2,number:6,name:"오링",  job:"궁성",  cp:3333},
+  {boss:"침식의 정화소",group:2,number:7,name:"썬버",  job:"정령성",cp:3333},
+  {boss:"침식의 정화소",group:2,number:8,name:"히밥",  job:"치유성",cp:3333},
 ];
 // ============================================================
 //  ✏️  데이터 수정 끝
@@ -332,26 +364,26 @@ const DEALER  = ["마도성","정령성","궁성","검성","살성"];
 // members: [{job,...}, ...] 4명 배열
 function evalSynergy(members){
   const jobs = members.map(m=>m.job);
-  const hasHeal   = jobs.some(j=>HEALER.includes(j));
-  const hasBuf    = jobs.some(j=>BUFFER.includes(j));
-  const hasTank   = jobs.some(j=>TANK.includes(j));
-  const dealCnt   = jobs.filter(j=>DEALER.includes(j)).length;
-  const missing   = [];
-  if(!hasHeal) missing.push("치유성");
-  if(!hasBuf)  missing.push("호법성");
-  if(!hasTank) missing.push("수호성");
+  const hasHeal  = jobs.some(j=>HEALER.includes(j));
+  const hasBuf   = jobs.some(j=>BUFFER.includes(j));
+  const hasTank  = jobs.some(j=>TANK.includes(j));
+  const dealCnt  = jobs.filter(j=>DEALER.includes(j)).length;
+  const missing  = [];
+  if(!hasHeal)  missing.push("치유성");
+  if(!hasBuf)   missing.push("호법성");
+  if(!hasTank)  missing.push("수호성");
   if(dealCnt<1) missing.push("딜러");
 
   if(hasHeal && hasBuf && hasTank && dealCnt>=1){
     return{grade:"great",label:"✨ 좋은 시너지",
-      reason:"치유성·호법성·수호성·딜러가 모두 포함되어 균형이 좋습니다."};
+      reason:"직업군 균형이 좋습니다."};
   }
-  if(missing.length<=1){
+  if(missing.length===1){
     return{grade:"good",label:"👍 보통",
       reason:`${missing[0]}이(가) 없어 시너지가 아쉽습니다.`};
   }
   return{grade:"poor",label:"⚠️ 아쉬움",
-    reason:`${missing.join("·")} 역할이 부족하여 안정성이 낮습니다.`};
+    reason:`${missing.join("·")} 역할이 부족합니다.`};
 }
 
 // ── 보스/그룹 구조화 ──────────────────────────────────────
@@ -377,7 +409,7 @@ function jobBadge(job){
 }
 
 // ── 그룹 카드 HTML 생성 ───────────────────────────────────
-function groupCardHTML(bossName, groupNum, members){
+function groupCardHTML(bossName, groupNum, members, isAI=false){
   const p1 = members.filter(m=>m.number<=4);
   const p2 = members.filter(m=>m.number>=5);
   const s1 = evalSynergy(p1), s2 = evalSynergy(p2);
@@ -386,7 +418,10 @@ function groupCardHTML(bossName, groupNum, members){
     <tr class="${pClass}" data-name="${m.name}">
       <td class="td-num">${m.number}</td>
       <td>
-        <div class="td-name">${m.name}</div>
+        <div class="td-name-row">
+          <span class="td-name">${m.name}</span>
+          <span class="td-cp">⚡${(m.cp||0).toLocaleString()}</span>
+        </div>
         <div class="td-job">${jobBadge(m.job)}</div>
       </td>
     </tr>`).join("");
@@ -401,8 +436,8 @@ function groupCardHTML(bossName, groupNum, members){
     </div>`;
 
   return `
-  <div class="group-card">
-    <div class="group-header">그룹 ${groupNum}</div>
+  <div class="group-card${isAI?' ai-group':''}">
+    <div class="group-header">그룹 ${groupNum}${isAI?` <span class="ai-recommend-tag">🤖 AI 추천</span>`:''}</div>
     <div class="party-label">── 1파티 (1~4번)</div>
     <table class="member-table">${rowsHTML(p1,"p1-row")}</table>
     <div class="synergy-wrap p1">${synergyBadge(s1)}</div>
@@ -412,20 +447,111 @@ function groupCardHTML(bossName, groupNum, members){
   </div>`;
 }
 
+// ── AI 추천 그룹 데이터 (침식의 정화소 그룹3·4) ──────────
+// 원본 풀: 그룹1·2 16명 + 추가 8명 총 24명을
+// 그룹3·4에 각 8명씩 시너지 최적 배치
+// 시너지 우선순위: 수호성 > 치유성 > 호법성 > 딜러
+//
+// ✏️ 추가 인원 (레이드 참여 신규 캐릭터)
+const extraPool = [
+  {name:"레오",    job:"검성"},
+  {name:"꼼꼼",    job:"호법성"},
+  {name:"뚝배기",  job:"검성"},
+  {name:"마이썹",  job:"검성"},
+  {name:"백살블리",job:"정령성"},
+  {name:"센치",    job:"치유성"},
+  {name:"짱령",    job:"정령성"},
+  {name:"추이",    job:"살성"},
+];
+
+// 침식의 정화소 그룹1·2 전체 캐릭터를 raidData에서 추출
+function getChimPool(){
+  return raidData
+    .filter(d=>d.boss==="침식의 정화소")
+    .map(d=>({name:d.name, job:d.job, cp:d.cp}));
+}
+
+// 전체 풀(그룹1·2 + 추가)을 시너지 기준으로 4그룹 재배치
+function buildAIGroups(){
+  const pool = [...getChimPool(), ...extraPool.map(e=>({...e, cp:3333}))];
+
+  // 역할별 버킷
+  const tanks   = pool.filter(m=>TANK.includes(m.job));
+  const healers = pool.filter(m=>HEALER.includes(m.job));
+  const buffers = pool.filter(m=>BUFFER.includes(m.job));
+  const dealers = pool.filter(m=>DEALER.includes(m.job));
+
+  const used = new Set();
+  const pickOne = arr => {
+    const m = arr.find(m=>!used.has(m.name));
+    if(m) used.add(m.name);
+    return m || null;
+  };
+  const fillDealer = (party, n) => {
+    const rem = dealers.filter(m=>!used.has(m.name));
+    for(const m of rem){ if(party.length>=n) break; party.push(m); used.add(m.name); }
+    // 딜러 부족 시 남은 풀에서 보충
+    const fallback = pool.filter(m=>!used.has(m.name));
+    for(const m of fallback){ if(party.length>=n) break; party.push(m); used.add(m.name); }
+  };
+
+  // 파티 1개 구성: [수호성, 딜러, 딜러, 치유성] → 번호 1~4 또는 5~8
+  // 치유성은 항상 마지막(4번 or 8번)
+  const buildParty = () => {
+    const tank   = pickOne(tanks);
+    const buf    = pickOne(buffers);
+    const party  = [tank, buf].filter(Boolean);
+    fillDealer(party, 3); // 수호+호법+딜러들로 3명 채우기
+    const heal   = pickOne(healers);
+    if(heal) party.push(heal); // 치유성은 마지막(4번/8번)
+    // 혹시 4명 미만이면 남은 풀에서 보충
+    const fallback = pool.filter(m=>!used.has(m.name));
+    for(const m of fallback){ if(party.length>=4) break; party.push(m); used.add(m.name); }
+    return party.slice(0,4);
+  };
+
+  const g3p1 = buildParty();
+  const g3p2 = buildParty();
+  const g4p1 = buildParty();
+  const g4p2 = buildParty();
+
+  const toMembers = (p1, p2) => [
+    ...p1.map((m,i)=>({...m, number:i+1})),
+    ...p2.map((m,i)=>({...m, number:i+5})),
+  ];
+
+  return [
+    {group:3, members: toMembers(g3p1, g3p2)},
+    {group:4, members: toMembers(g4p1, g4p2)},
+  ];
+}
+
+const aiRecommendGroups = buildAIGroups();
+
 // ── 탭1 대시보드 렌더링 ───────────────────────────────────
 function renderDashboard(){
   const bosses = buildStructure(raidData);
   let html = "";
-  const bossOrder = ["루드라","침식의 정화소"];
+  const bossOrder = ["침식의 정화소","루드라"];
 
   bossOrder.forEach(bossName=>{
     if(!bosses[bossName]) return;
     html += `<div class="boss-section">
       <div class="boss-title">${bossName}</div>
       <div class="groups-grid">`;
+
+    // 실제 그룹 카드
     Object.keys(bosses[bossName]).sort((a,b)=>a-b).forEach(g=>{
-      html += groupCardHTML(bossName, g, bosses[bossName][g]);
+      html += groupCardHTML(bossName, g, bosses[bossName][g], false);
     });
+
+    // 침식의 정화소에만 AI 추천 그룹 3·4 추가
+    if(bossName === "침식의 정화소"){
+      aiRecommendGroups.forEach(rec=>{
+        html += groupCardHTML(bossName, rec.group, rec.members, true);
+      });
+    }
+
     html += `</div></div>`;
   });
   document.getElementById("dashboard").innerHTML = html;
