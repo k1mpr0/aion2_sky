@@ -376,14 +376,14 @@ function evalSynergy(members){
 
   if(hasHeal && hasBuf && hasTank && dealCnt>=1){
     return{grade:"great",label:"✨ 좋은 시너지",
-      reason:"직업군 균형이 좋습니다."};
+      reason:"직업군 균형이 좋음"};
   }
   if(missing.length===1){
     return{grade:"good",label:"👍 보통",
-      reason:`${missing[0]}이(가) 없어 시너지가 아쉽습니다.`};
+      reason:`${missing[0]} 없어 시너지 아쉬움`};
   }
   return{grade:"poor",label:"⚠️ 아쉬움",
-    reason:`${missing.join("·")} 역할이 부족합니다.`};
+    reason:`${missing.join("·")} 역할 부족함`};
 }
 
 // ── 보스/그룹 구조화 ──────────────────────────────────────
