@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>아이온2 레이드 파티 편성 대시보드</title>
+<style>
+/* ===== 전체 리셋 & 기본 ===== */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b0d18;
+  --surface:#13152a;
+  --card:#1a1d30;
+  --border:#2a2d4a;
+  --accent:#7aa2f7;
+  --accent2:#bb9af7;
+  --gold:#e0af68;
+  --green:#9ece6a;
+  --red:#f7768e;
+  --yellow:#e0af68;
+  --text:#cdd6f4;
+  --muted:#565f89;
+  --party1:#1e2240;
+  --party2:#1a1d2e;
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI','Apple SD Gothic Neo',sans-serif;min-height:100vh;padding-bottom:60px}
+
+/* ===== 헤더 ===== */
+header{
+  background:linear-gradient(135deg,#13152a,#1a1d30);
+  border-bottom:1px solid var(--border);
+  padding:20px 24px 16px;
+  text-align:center;
+}
+header h1{font-size:1.6rem;color:var(--accent);letter-spacing:3px;text-shadow:0 0 20px #7aa2f755}
+header p{font-size:.78rem;color:var(--muted);margin-top:4px}
+
+/* ===== 검색창 ===== */
+.search-bar{
+  display:flex;gap:8px;align-items:center;
+  max-width:540px;margin:18px auto 0;
+}
+.search-bar input{
+  flex:1;padding:10px 14px;
+  background:#0f1120;border:1.5px solid var(--border);
+  border-radius:8px;color:var(--text);font-size:.95rem;outline:none;
+  transition:border-color .2s;
+}
+.search-bar input:focus{border-color:var(--accent)}
+.search-bar button{
+  padding:10px 16px;border:none;border-radius:8px;
+  font-size:.85rem;font-weight:700;cursor:pointer;transition:opacity .2s;
+}
+.search-bar button:hover{opacity:.85}
+.btn-find{background:var(--accent);color:#0b0d18}
+.btn-clear{background:#2a2d4a;color:var(--text)}
+#searchMsg{
+  text-align:center;font-size:.85rem;margin-top:8px;height:18px;
+  color:var(--red);
+}
+
+/* ===== 탭 ===== */
+.tabs{
+  display:flex;gap:4px;max-width:960px;
+  margin:24px auto 0;padding:0 16px;
+}
+.tab{
+  padding:9px 22px;border-radius:8px 8px 0 0;
+  border:1px solid var(--border);border-bottom:none;
+  background:var(--surface);color:var(--muted);
+  font-size:.88rem;cursor:pointer;transition:all .2s;
+}
+.tab.active{background:var(--card);color:var(--accent);border-color:var(--accent);font-weight:700}
+
+/* ===== 탭 내용 ===== */
+.tab-content{display:none;max-width:1400px;margin:0 auto;padding:0 16px 16px}
+.tab-content.active{display:block}
+.tab-panel{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:0 12px 12px 12px;padding:24px;
+}
+
+/* ===== 보스 섹션 ===== */
+.boss-section{margin-bottom:36px}
+.boss-title{
+  font-size:1.05rem;font-weight:700;color:var(--gold);
+  letter-spacing:2px;margin-bottom:16px;padding-bottom:8px;
+  border-bottom:2px solid #e0af6833;display:flex;align-items:center;gap:8px;
+}
+.boss-title::before{content:"⚔️"}
+.groups-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+
+/* ===== 그룹 카드 ===== */
+.group-card{
+  background:#111427;border:1px solid var(--border);
+  border-radius:10px;overflow:hidden;
+}
+.group-header{
+  background:linear-gradient(90deg,#1e2240,#1a1d30);
+  padding:8px 14px;font-size:.82rem;font-weight:700;
+  color:var(--accent2);letter-spacing:1px;
+  border-bottom:1px solid var(--border);
+}
+
+/* ===== 파티 라벨 ===== */
+.party-label{
+  font-size:.72rem;font-weight:700;letter-spacing:1px;
+  padding:4px 14px;color:var(--muted);
+  background:var(--party1);border-bottom:1px dashed #2a2d4a44;
+}
+.party-label.p2{background:var(--party2)}
+
+/* ===== 멤버 테이블 ===== */
+.member-table{width:100%;border-collapse:collapse;font-size:.83rem}
+.member-table tr{border-bottom:1px solid #1e2138;transition:background .15s}
+.member-table tr:last-child{border-bottom:none}
+.member-table tr.p1-row{background:var(--party1)}
+.member-table tr.p2-row{background:var(--party2)}
+.member-table tr:hover{background:#222540}
+.member-table td{padding:7px 10px;vertical-align:middle}
+.td-num{width:26px;color:var(--muted);font-size:.75rem;text-align:center}
+.td-name{font-weight:600;color:var(--text)}
+.td-job{font-size:.72rem;color:var(--muted);margin-top:1px}
+.td-name-row{display:flex;align-items:center;gap:6px}
+.td-cp{font-size:.68rem;color:#7aa2f7;background:#1a2040;border:1px solid #2a3a6a;border-radius:4px;padding:1px 5px;letter-spacing:.5px;white-space:nowrap}
+.td-job-badge{display:inline-block;padding:1px 7px;border-radius:999px;font-size:.7rem;font-weight:700}
+
+/* 직업 색상 */
+.job-치유성{background:#1e3a2f;color:#9ece6a}
+.job-호법성{background:#2a2040;color:#bb9af7}
+.job-마도성{background:#1e2a40;color:#7aa2f7}
+.job-정령성{background:#1e3330;color:#73daca}
+.job-궁성  {background:#3a2a1e;color:#ff9e64}
+.job-수호성{background:#3a1e1e;color:#f7768e}
+.job-검성  {background:#2a2020;color:#e0af68}
+.job-살성  {background:#1e1e2a;color:#a9b1d6}
+
+/* ===== 강조(검색 히트) ===== */
+@keyframes shine{
+  0%,100%{box-shadow:0 0 0 2px #7aa2f7,0 0 12px 4px #7aa2f755}
+  50%     {box-shadow:0 0 0 3px #bb9af7,0 0 22px 8px #bb9af788}
+}
+.member-table tr.highlight{
+  background:#1c2060 !important;
+  animation:shine 1.4s ease-in-out infinite;
+  border-radius:4px;
+}
+.member-table tr.highlight .td-name{color:#fff;text-shadow:0 0 8px #7aa2f7}
+
+/* ===== 시너지 배지 ===== */
+.synergy-wrap{padding:6px 10px 8px;display:flex;gap:8px;background:inherit}
+.synergy-wrap.p1{background:var(--party1)}
+.synergy-wrap.p2{background:var(--party2)}
+.synergy-badge{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 10px;border-radius:8px;font-size:.75rem;
+  flex:1;
+}
+.synergy-badge.great{background:#1e3a2f;border:1px solid #9ece6a55;color:#9ece6a}
+.synergy-badge.good {background:#2a2a1e;border:1px solid #e0af6855;color:#e0af68}
+.synergy-badge.poor {background:#3a1e1e;border:1px solid #f7768e55;color:#f7768e}
+.synergy-icon{font-size:.95rem}
+.synergy-info{display:flex;flex-direction:column;gap:1px}
+.synergy-label{font-weight:700;font-size:.77rem}
+.synergy-reason{font-size:.69rem;opacity:.85}
+
+/* ===== AI 추천 그룹 카드 (실제 편성표 탭 내 특별 색상) ===== */
+.group-card.ai-group{
+  background:#0f1520;
+  border:1.5px solid #4a3f7a;
+  position:relative;
+}
+.group-card.ai-group .group-header{
+  display:flex;align-items:center;justify-content:space-between;
+}
+.ai-recommend-tag{
+  background:linear-gradient(90deg,#bb9af7,#7aa2f7);
+  color:#0b0d18;font-size:.62rem;font-weight:800;
+  padding:2px 8px;border-radius:999px;letter-spacing:.5px;
+  white-space:nowrap;
+}
+.group-card.ai-group .group-header{
+  background:linear-gradient(90deg,#2a1e4a,#1e2040);
+  color:#bb9af7;border-bottom:1px solid #4a3f7a;
+}
+.group-card.ai-group .party-label{
+  background:#1a1230;color:#9a8abf;
+  border-bottom:1px dashed #3a2d6a44;
+}
+.group-card.ai-group .party-label.p2{background:#141028}
+.group-card.ai-group .member-table tr.p1-row{background:#1a1230}
+.group-card.ai-group .member-table tr.p2-row{background:#141028}
+.group-card.ai-group .member-table tr:hover{background:#261a48}
+.group-card.ai-group .synergy-wrap.p1{background:#1a1230}
+.group-card.ai-group .synergy-wrap.p2{background:#141028}
+
+/* ===== 탭2: AI 추천 ===== */
+.ai-section{margin-bottom:32px}
+.ai-boss-title{
+  font-size:1rem;font-weight:700;color:var(--gold);
+  margin-bottom:14px;padding-bottom:6px;
+  border-bottom:1px solid #e0af6833;
+}
+.ai-groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.ai-card{background:#111427;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.ai-card-header{
+  background:linear-gradient(90deg,#1e2240,#1a1d30);
+  padding:7px 14px;font-size:.8rem;font-weight:700;
+  color:var(--accent2);border-bottom:1px solid var(--border);
+}
+.ai-party{padding:10px 14px}
+.ai-party-label{font-size:.72rem;color:var(--muted);font-weight:700;margin-bottom:6px;letter-spacing:1px}
+.ai-member{
+  display:flex;align-items:center;gap:8px;
+  padding:5px 0;border-bottom:1px solid #1e2138;font-size:.82rem;
+}
+.ai-member:last-child{border:none}
+.ai-member-num{color:var(--muted);font-size:.72rem;width:18px;text-align:center}
+.ai-member-name{font-weight:600;flex:1}
+.ai-reason{
+  margin-top:8px;padding:7px 10px;
+  background:#0f1120;border-radius:6px;
+  font-size:.73rem;color:var(--muted);line-height:1.5;
+}
+.ai-reason::before{content:"💡 ";color:var(--gold)}
+.ai-synergy-row{padding:6px 14px 10px}
+
+/* ===== 반응형 ===== */
+@media(max-width:600px){
+  header h1{font-size:1.2rem}
+  .tab{padding:8px 14px;font-size:.8rem}
+  .tab-panel{padding:14px 10px}
+  .groups-grid,.ai-groups{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<header>
+  <h1>⚔ 아이온2 레이드 파티 편성 대시보드</h1>
+  <p>보스 레이드 그룹 편성 확인 및 시너지 평가</p>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="캐릭터명 입력 후 찾기…" />
+    <button class="btn-find" onclick="findCharacter()">찾기</button>
+    <button class="btn-clear" onclick="clearSearch()">초기화</button>
+  </div>
+  <div id="searchMsg"></div>
+</header>
+
+<!-- 탭 -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab(0)">📋 실제 편성표</div>
+  <div class="tab" onclick="switchTab(1)">🤖 AI 추천 조합</div>
+</div>
+
+<!-- 탭1: 실제 편성표 -->
+<div class="tab-content active" id="tab0">
+  <div class="tab-panel" id="dashboard"></div>
+</div>
+
+<!-- 탭2: AI 추천 조합 -->
+<div class="tab-content" id="tab1">
+  <div class="tab-panel" id="aiPanel"></div>
+</div>
+
+<script>
+// ============================================================
+//  ✏️  [데이터 수정 구역] — 여기만 수정하면 됩니다!
+//
+//  각 항목 설명:
+//    boss   : "루드라" 또는 "침식의 정화소"
+//    group  : 그룹 번호 (루드라 1~4, 침식 1~2)
+//    number : 그룹 내 번호 (1~8)
+//    name   : 캐릭터명
+//    job    : 직업 — 치유성/호법성/마도성/정령성/궁성/수호성/검성/살성
+// ============================================================
+const raidData = [
+
+  // ──────────────────────────────
+  //  1보스: 루드라 — 그룹 1
+  // ──────────────────────────────
+  {boss:"루드라",group:1,number:1,name:"아이젠",   job:"수호성",cp:3333},
+  {boss:"루드라",group:1,number:2,name:"세라핀",   job:"치유성",cp:3333},
+  {boss:"루드라",group:1,number:3,name:"블레이즈", job:"검성",  cp:3333},
+  {boss:"루드라",group:1,number:4,name:"루나리스", job:"마도성",cp:3333},
+  {boss:"루드라",group:1,number:5,name:"토르벡",   job:"호법성",cp:3333},
+  {boss:"루드라",group:1,number:6,name:"실버윙",   job:"궁성",  cp:3333},
+  {boss:"루드라",group:1,number:7,name:"다크샤도", job:"살성",  cp:3333},
+  {boss:"루드라",group:1,number:8,name:"에리카",   job:"정령성",cp:3333},
+
+  // ──────────────────────────────
+  //  1보스: 루드라 — 그룹 2
+  // ──────────────────────────────
+  {boss:"루드라",group:2,number:1,name:"카이로스",    job:"수호성",cp:3333},
+  {boss:"루드라",group:2,number:2,name:"유이나",      job:"치유성",cp:3333},
+  {boss:"루드라",group:2,number:3,name:"스톰브레이커",job:"검성",  cp:3333},
+  {boss:"루드라",group:2,number:4,name:"페넬로페",    job:"호법성",cp:3333},
+  {boss:"루드라",group:2,number:5,name:"라이카",      job:"수호성",cp:3333},
+  {boss:"루드라",group:2,number:6,name:"제이슨",      job:"마도성",cp:3333},
+  {boss:"루드라",group:2,number:7,name:"셀린",        job:"궁성",  cp:3333},
+  {boss:"루드라",group:2,number:8,name:"그레이슨",    job:"살성",  cp:3333},
+
+  // ──────────────────────────────
+  //  1보스: 루드라 — 그룹 3
+  // ──────────────────────────────
+  {boss:"루드라",group:3,number:1,name:"벨카이트",  job:"수호성",cp:3333},
+  {boss:"루드라",group:3,number:2,name:"소피아",    job:"치유성",cp:3333},
+  {boss:"루드라",group:3,number:3,name:"아우로라",  job:"정령성",cp:3333},
+  {boss:"루드라",group:3,number:4,name:"타이거",    job:"검성",  cp:3333},
+  {boss:"루드라",group:3,number:5,name:"란슬롯",    job:"호법성",cp:3333},
+  {boss:"루드라",group:3,number:6,name:"미네르바",  job:"마도성",cp:3333},
+  {boss:"루드라",group:3,number:7,name:"퀸로즈",    job:"치유성",cp:3333},
+  {boss:"루드라",group:3,number:8,name:"바이퍼",    job:"살성",  cp:3333},
+
+  // ──────────────────────────────
+  //  1보스: 루드라 — 그룹 4
+  // ──────────────────────────────
+  {boss:"루드라",group:4,number:1,name:"드래곤하트", job:"수호성",cp:3333},
+  {boss:"루드라",group:4,number:2,name:"헬리아",     job:"치유성",cp:3333},
+  {boss:"루드라",group:4,number:3,name:"나이트폴",   job:"살성",  cp:3333},
+  {boss:"루드라",group:4,number:4,name:"스텔라",     job:"마도성",cp:3333},
+  {boss:"루드라",group:4,number:5,name:"로드릭",     job:"호법성",cp:3333},
+  {boss:"루드라",group:4,number:6,name:"엘리시아",   job:"정령성",cp:3333},
+  {boss:"루드라",group:4,number:7,name:"하울링",     job:"검성",  cp:3333},
+  {boss:"루드라",group:4,number:8,name:"세이지",     job:"궁성",  cp:3333},
+
+  // ──────────────────────────────
+  //  2보스: 침식의 정화소 — 그룹 1
+  // ──────────────────────────────
+  {boss:"침식의 정화소",group:1,number:1,name:"메이트",   job:"살성",  cp:3333},
+  {boss:"침식의 정화소",group:1,number:2,name:"오팔팔",   job:"수호성",cp:3333},
+  {boss:"침식의 정화소",group:1,number:3,name:"찌디",     job:"궁성",  cp:3333},
+  {boss:"침식의 정화소",group:1,number:4,name:"살구",     job:"치유성",cp:3333},
+  {boss:"침식의 정화소",group:1,number:5,name:"초능력",   job:"마도성",cp:3333},
+  {boss:"침식의 정화소",group:1,number:6,name:"태양",     job:"수호성",cp:3333},
+  {boss:"침식의 정화소",group:1,number:7,name:"호법으앜", job:"호법성",cp:3333},
+  {boss:"침식의 정화소",group:1,number:8,name:"초잉",     job:"치유성",cp:3333},
+
+  // ──────────────────────────────
+  //  2보스: 침식의 정화소 — 그룹 2 (필수 반영 데이터)
+  // ──────────────────────────────
+  {boss:"침식의 정화소",group:2,number:1,name:"현곤",  job:"수호성",cp:3333},
+  {boss:"침식의 정화소",group:2,number:2,name:"은묘",  job:"검성",  cp:3333},
+  {boss:"침식의 정화소",group:2,number:3,name:"매머드",job:"마도성",cp:3333},
+  {boss:"침식의 정화소",group:2,number:4,name:"금묘",  job:"치유성",cp:3333},
+  {boss:"침식의 정화소",group:2,number:5,name:"조이",  job:"호법성",cp:3333},
+  {boss:"침식의 정화소",group:2,number:6,name:"오링",  job:"궁성",  cp:3333},
+  {boss:"침식의 정화소",group:2,number:7,name:"썬버",  job:"정령성",cp:3333},
+  {boss:"침식의 정화소",group:2,number:8,name:"히밥",  job:"치유성",cp:3333},
+];
+// ============================================================
+//  ✏️  데이터 수정 끝
+// ============================================================
+
+
+// ── 직업 역할 분류 ────────────────────────────────────────
+const HEALER  = ["치유성"];
+const BUFFER  = ["호법성"];
+const TANK    = ["수호성"];
+const DEALER  = ["마도성","정령성","궁성","검성","살성"];
+
+// ── 시너지 평가 함수 ──────────────────────────────────────
+// members: [{job,...}, ...] 4명 배열
+function evalSynergy(members){
+  const jobs = members.map(m=>m.job);
+  const hasHeal  = jobs.some(j=>HEALER.includes(j));
+  const hasBuf   = jobs.some(j=>BUFFER.includes(j));
+  const hasTank  = jobs.some(j=>TANK.includes(j));
+  const dealCnt  = jobs.filter(j=>DEALER.includes(j)).length;
+  const missing  = [];
+  if(!hasHeal)  missing.push("치유성");
+  if(!hasBuf)   missing.push("호법성");
+  if(!hasTank)  missing.push("수호성");
+  if(dealCnt<1) missing.push("딜러");
+
+  if(hasHeal && hasBuf && hasTank && dealCnt>=1){
+    return{grade:"great",label:"✨ 좋은 시너지",
+      reason:"직업군 균형이 좋음"};
+  }
+  if(missing.length===1){
+    return{grade:"good",label:"👍 보통",
+      reason:`${missing[0]} 없어 시너지 아쉬움`};
+  }
+  return{grade:"poor",label:"⚠️ 아쉬움",
+    reason:`${missing.join("·")} 역할 부족함`};
+}
+
+// ── 보스/그룹 구조화 ──────────────────────────────────────
+function buildStructure(data){
+  const bosses={};
+  data.forEach(d=>{
+    if(!bosses[d.boss]) bosses[d.boss]={};
+    if(!bosses[d.boss][d.group]) bosses[d.boss][d.group]=[];
+    bosses[d.boss][d.group].push(d);
+  });
+  // 그룹 내 번호 정렬
+  Object.values(bosses).forEach(groups=>{
+    Object.keys(groups).forEach(g=>{
+      groups[g].sort((a,b)=>a.number-b.number);
+    });
+  });
+  return bosses;
+}
+
+// ── 직업 배지 HTML ────────────────────────────────────────
+function jobBadge(job){
+  return `<span class="td-job-badge job-${job}">${job}</span>`;
+}
+
+// ── 그룹 카드 HTML 생성 ───────────────────────────────────
+function groupCardHTML(bossName, groupNum, members, isAI=false){
+  const p1 = members.filter(m=>m.number<=4);
+  const p2 = members.filter(m=>m.number>=5);
+  const s1 = evalSynergy(p1), s2 = evalSynergy(p2);
+
+  const rowsHTML = (list, pClass) => list.map(m=>`
+    <tr class="${pClass}" data-name="${m.name}">
+      <td class="td-num">${m.number}</td>
+      <td>
+        <div class="td-name-row">
+          <span class="td-name">${m.name}</span>
+          <span class="td-cp">⚡${(m.cp||0).toLocaleString()}</span>
+        </div>
+        <div class="td-job">${jobBadge(m.job)}</div>
+      </td>
+    </tr>`).join("");
+
+  const synergyBadge = s => `
+    <div class="synergy-badge ${s.grade}">
+      <span class="synergy-icon">${s.grade==="great"?"🌟":s.grade==="good"?"👍":"⚠️"}</span>
+      <div class="synergy-info">
+        <span class="synergy-label">${s.label}</span>
+        <span class="synergy-reason">${s.reason}</span>
+      </div>
+    </div>`;
+
+  return `
+  <div class="group-card${isAI?' ai-group':''}">
+    <div class="group-header">그룹 ${groupNum}${isAI?` <span class="ai-recommend-tag">🤖 AI 추천</span>`:''}</div>
+    <div class="party-label">── 1파티 (1~4번)</div>
+    <table class="member-table">${rowsHTML(p1,"p1-row")}</table>
+    <div class="synergy-wrap p1">${synergyBadge(s1)}</div>
+    <div class="party-label p2">── 2파티 (5~8번)</div>
+    <table class="member-table">${rowsHTML(p2,"p2-row")}</table>
+    <div class="synergy-wrap p2">${synergyBadge(s2)}</div>
+  </div>`;
+}
+
+// ── AI 추천 그룹 데이터 (침식의 정화소 그룹3·4) ──────────
+// 원본 풀: 그룹1·2 16명 + 추가 8명 총 24명을
+// 그룹3·4에 각 8명씩 시너지 최적 배치
+// 시너지 우선순위: 수호성 > 치유성 > 호법성 > 딜러
+//
+// ✏️ 추가 인원 (레이드 참여 신규 캐릭터)
+const extraPool = [
+  {name:"레오",    job:"검성"},
+  {name:"꼼꼼",    job:"호법성"},
+  {name:"뚝배기",  job:"검성"},
+  {name:"마이썹",  job:"검성"},
+  {name:"백살블리",job:"정령성"},
+  {name:"센치",    job:"치유성"},
+  {name:"짱령",    job:"정령성"},
+  {name:"추이",    job:"살성"},
+];
+
+// 침식의 정화소 그룹1·2 전체 캐릭터를 raidData에서 추출
+function getChimPool(){
+  return raidData
+    .filter(d=>d.boss==="침식의 정화소")
+    .map(d=>({name:d.name, job:d.job, cp:d.cp}));
+}
+
+// 전체 풀(그룹1·2 + 추가)을 시너지 기준으로 4그룹 재배치
+function buildAIGroups(){
+  const pool = [...getChimPool(), ...extraPool.map(e=>({...e, cp:3333}))];
+
+  // 역할별 버킷
+  const tanks   = pool.filter(m=>TANK.includes(m.job));
+  const healers = pool.filter(m=>HEALER.includes(m.job));
+  const buffers = pool.filter(m=>BUFFER.includes(m.job));
+  const dealers = pool.filter(m=>DEALER.includes(m.job));
+
+  const used = new Set();
+  const pickOne = arr => {
+    const m = arr.find(m=>!used.has(m.name));
+    if(m) used.add(m.name);
+    return m || null;
+  };
+  const fillDealer = (party, n) => {
+    const rem = dealers.filter(m=>!used.has(m.name));
+    for(const m of rem){ if(party.length>=n) break; party.push(m); used.add(m.name); }
+    // 딜러 부족 시 남은 풀에서 보충
+    const fallback = pool.filter(m=>!used.has(m.name));
+    for(const m of fallback){ if(party.length>=n) break; party.push(m); used.add(m.name); }
+  };
+
+  // 파티 1개 구성: [수호성, 딜러, 딜러, 치유성] → 번호 1~4 또는 5~8
+  // 치유성은 항상 마지막(4번 or 8번)
+  const buildParty = () => {
+    const tank   = pickOne(tanks);
+    const buf    = pickOne(buffers);
+    const party  = [tank, buf].filter(Boolean);
+    fillDealer(party, 3); // 수호+호법+딜러들로 3명 채우기
+    const heal   = pickOne(healers);
+    if(heal) party.push(heal); // 치유성은 마지막(4번/8번)
+    // 혹시 4명 미만이면 남은 풀에서 보충
+    const fallback = pool.filter(m=>!used.has(m.name));
+    for(const m of fallback){ if(party.length>=4) break; party.push(m); used.add(m.name); }
+    return party.slice(0,4);
+  };
+
+  const g3p1 = buildParty();
+  const g3p2 = buildParty();
+  const g4p1 = buildParty();
+  const g4p2 = buildParty();
+
+  const toMembers = (p1, p2) => [
+    ...p1.map((m,i)=>({...m, number:i+1})),
+    ...p2.map((m,i)=>({...m, number:i+5})),
+  ];
+
+  return [
+    {group:3, members: toMembers(g3p1, g3p2)},
+    {group:4, members: toMembers(g4p1, g4p2)},
+  ];
+}
+
+const aiRecommendGroups = buildAIGroups();
+
+// ── 탭1 대시보드 렌더링 ───────────────────────────────────
+function renderDashboard(){
+  const bosses = buildStructure(raidData);
+  let html = "";
+  const bossOrder = ["침식의 정화소","루드라"];
+
+  bossOrder.forEach(bossName=>{
+    if(!bosses[bossName]) return;
+    html += `<div class="boss-section">
+      <div class="boss-title">${bossName}</div>
+      <div class="groups-grid">`;
+
+    // 실제 그룹 카드
+    Object.keys(bosses[bossName]).sort((a,b)=>a-b).forEach(g=>{
+      html += groupCardHTML(bossName, g, bosses[bossName][g], false);
+    });
+
+    // 침식의 정화소에만 AI 추천 그룹 3·4 추가
+    if(bossName === "침식의 정화소"){
+      aiRecommendGroups.forEach(rec=>{
+        html += groupCardHTML(bossName, rec.group, rec.members, true);
+      });
+    }
+
+    html += `</div></div>`;
+  });
+  document.getElementById("dashboard").innerHTML = html;
+}
+
+// ── 탭2: AI 추천 조합 (규칙 기반) ────────────────────────
+// 각 그룹의 8명을 최적 파티로 재배치
+// 전략: 1파티 = 수호성+치유성+호법성+딜러, 2파티 = 나머지 균형
+function buildAIRecommend(){
+  const bosses = buildStructure(raidData);
+  let html = "";
+  const bossOrder = ["루드라","침식의 정화소"];
+
+  bossOrder.forEach(bossName=>{
+    if(!bosses[bossName]) return;
+    html += `<div class="ai-section">
+      <div class="ai-boss-title">⚔️ ${bossName}</div>
+      <div class="ai-groups">`;
+
+    Object.keys(bosses[bossName]).sort((a,b)=>a-b).forEach(g=>{
+      const members = [...bosses[bossName][g]]; // 복사
+      // 역할별 분류
+      const tanks   = members.filter(m=>TANK.includes(m.job));
+      const healers = members.filter(m=>HEALER.includes(m.job));
+      const buffers = members.filter(m=>BUFFER.includes(m.job));
+      const dealers = members.filter(m=>DEALER.includes(m.job));
+
+      // 1파티: 수호성1 + 치유성1 + 호법성1 + 딜러1 우선 배치
+      const p1=[]; const used=new Set();
+      const pick=(arr)=>{const x=arr.find(m=>!used.has(m.name));if(x){p1.push(x);used.add(x.name);}};
+      pick(tanks); pick(healers); pick(buffers); pick(dealers);
+      // 1파티 4명 채우기 (부족하면 남은 딜러로)
+      members.forEach(m=>{if(p1.length<4&&!used.has(m.name)){p1.push(m);used.add(m.name);}});
+      // 2파티: 나머지
+      const p2 = members.filter(m=>!used.has(m.name));
+
+      const s1=evalSynergy(p1), s2=evalSynergy(p2);
+
+      const aiMemberHTML=(list,startNum)=>list.map((m,i)=>`
+        <div class="ai-member">
+          <span class="ai-member-num">${startNum+i}</span>
+          <span class="ai-member-name">${m.name}</span>
+          ${jobBadge(m.job)}
+        </div>`).join("");
+
+      // 추천 이유 생성
+      const p1Jobs = p1.map(m=>m.job).join("·");
+      const p2Jobs = p2.map(m=>m.job).join("·");
+      const reason1 = `1파티(${p1Jobs}) — ${s1.reason}`;
+      const reason2 = `2파티(${p2Jobs}) — ${s2.reason}`;
+
+      html += `
+      <div class="ai-card">
+        <div class="ai-card-header">그룹 ${g} 추천 배치</div>
+        <div class="ai-party">
+          <div class="ai-party-label">── 1파티</div>
+          ${aiMemberHTML(p1,1)}
+        </div>
+        <div class="ai-synergy-row">
+          <div class="synergy-badge ${s1.grade}">
+            <span class="synergy-icon">${s1.grade==="great"?"🌟":s1.grade==="good"?"👍":"⚠️"}</span>
+            <div class="synergy-info">
+              <span class="synergy-label">${s1.label}</span>
+            </div>
+          </div>
+        </div>
+        <div class="ai-party">
+          <div class="ai-party-label">── 2파티</div>
+          ${aiMemberHTML(p2,5)}
+        </div>
+        <div class="ai-synergy-row">
+          <div class="synergy-badge ${s2.grade}">
+            <span class="synergy-icon">${s2.grade==="great"?"🌟":s2.grade==="good"?"👍":"⚠️"}</span>
+            <div class="synergy-info">
+              <span class="synergy-label">${s2.label}</span>
+            </div>
+          </div>
+        </div>
+        <div class="ai-party">
+          <div class="ai-reason">${reason1}<br>${reason2}</div>
+        </div>
+      </div>`;
+    });
+    html += `</div></div>`;
+  });
+  document.getElementById("aiPanel").innerHTML = html;
+}
+
+// ── 탭 전환 ───────────────────────────────────────────────
+function switchTab(idx){
+  document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active",i===idx));
+  document.querySelectorAll(".tab-content").forEach((c,i)=>c.classList.toggle("active",i===idx));
+}
+
+// ── 검색 기능 ─────────────────────────────────────────────
+function findCharacter(){
+  // 이전 강조 제거
+  document.querySelectorAll("tr.highlight").forEach(r=>r.classList.remove("highlight"));
+  const msg = document.getElementById("searchMsg");
+  const raw = document.getElementById("searchInput").value;
+  const query = raw.trim(); // 앞뒤 공백 제거
+  if(!query){msg.textContent="";return;}
+
+  // 대소문자 무관 + 공백 제거 비교
+  const norm = s=>s.replace(/\s/g,"").toLowerCase();
+  const rows = [...document.querySelectorAll("[data-name]")];
+  const hit  = rows.find(r=>norm(r.dataset.name)===norm(query));
+
+  if(!hit){
+    msg.textContent=`"${query}" 캐릭터를 찾을 수 없습니다.`;
+    return;
+  }
+  msg.textContent="";
+
+  // 탭1이 아니면 탭1로 전환
+  switchTab(0);
+
+  // 강조 + 스크롤
+  hit.classList.add("highlight");
+  setTimeout(()=>{
+    hit.scrollIntoView({behavior:"smooth",block:"center"});
+  },100);
+}
+
+// 초기화
+function clearSearch(){
+  document.getElementById("searchInput").value="";
+  document.getElementById("searchMsg").textContent="";
+  document.querySelectorAll("tr.highlight").forEach(r=>r.classList.remove("highlight"));
+}
+
+// 엔터키 검색
+document.getElementById("searchInput").addEventListener("keydown",e=>{if(e.key==="Enter")findCharacter();});
+
+// ── 초기 렌더링 ───────────────────────────────────────────
+renderDashboard();
+buildAIRecommend();
+</script>
+</body>
+</html>
